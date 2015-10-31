@@ -165,7 +165,17 @@ AGGREGATE_ACTION_UPDATE_META = 'UpdateMeta'
 AGGREGATE_ACTION_DELETE = 'Delete'
 AGGREGATE_ACTION_ADD = 'Add'
 
+#import os
+#print "*******CWD*******", os.getcwd()
+#from nova.logger.common import configWriter
+#configWriter.CreateConfigFile("Config.cfg", "Constants", "Socket", "tcp://127.0.0.1:4000")
+#configWriter.CreateConfigFile("Config.cfg", "Constants", "LogDir", ".")
+#configWriter.CreateConfigFile("Config.cfg", "Constants", "Filename", "metric.log")
 
+from nova.logger import publish 
+publish.setLogger("compute-api", "Config.cfg")
+
+@publish.ReportLatency("demo", "demo")
 def check_instance_state(vm_state=None, task_state=(None,),
                          must_have_launched=True):
     """Decorator to check VM and/or task state before entry to API functions.

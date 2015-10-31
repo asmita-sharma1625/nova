@@ -36,6 +36,8 @@ check_policy = compute_api.check_policy
 check_instance_lock = compute_api.check_instance_lock
 check_instance_cell = compute_api.check_instance_cell
 
+from nova.logger.logger import Logger
+logger = Logger("compute-cell-api", "cell_config.cfg")
 
 class ComputeRPCAPIRedirect(object):
     # NOTE(comstud): These are a list of methods where the cells_rpcapi
@@ -170,11 +172,16 @@ class ComputeCellsAPI(compute_api.API):
         self._cell_type = 'api'
 
     def _cast_to_cells(self, context, instance, method, *args, **kwargs):
+        failcount = 1
         instance_uuid = instance.uuid
         cell_name = instance.cell_name
         if not cell_name:
+            failcount += 1
+            logger.logFailure("__cast_to_cells", "failure", failcount)
             raise exception.InstanceUnknownCell(instance_uuid=instance_uuid)
-        self.cells_rpcapi.cast_compute_api_method(context, cell_name,
+        
+        logger.logFailure("__cast_to_cells", "failure", failcount)
+        logger.reportLatency("__cast_to_cells", "Latency", self.cells_rpcapi.cast_compute_api_method, context, cell_name,
                 method, instance_uuid, *args, **kwargs)
 
     def _call_to_cells(self, context, instance, method, *args, **kwargs):
