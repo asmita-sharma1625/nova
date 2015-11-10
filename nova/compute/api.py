@@ -172,7 +172,7 @@ AGGREGATE_ACTION_ADD = 'Add'
 #configWriter.CreateConfigFile("Config.cfg", "Constants", "LogDir", ".")
 #configWriter.CreateConfigFile("Config.cfg", "Constants", "Filename", "metric.log")
 
-from nova.logger import publish 
+from metricgenerator import publish 
 publish.setLogger("compute-api", "Config.cfg")
 
 @publish.ReportLatency("demo", "demo")

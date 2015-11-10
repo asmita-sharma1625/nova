@@ -36,7 +36,7 @@ check_policy = compute_api.check_policy
 check_instance_lock = compute_api.check_instance_lock
 check_instance_cell = compute_api.check_instance_cell
 
-from nova.logger.logger import Logger
+from metricgenerator.logger import Logger
 logger = Logger("compute-cell-api", "cell_config.cfg")
 
 class ComputeRPCAPIRedirect(object):
