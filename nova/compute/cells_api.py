@@ -37,7 +37,9 @@ check_instance_lock = compute_api.check_instance_lock
 check_instance_cell = compute_api.check_instance_cell
 
 from metricgenerator.logger import Logger
-logger = Logger("compute-cell-api", "cell_config.cfg")
+logger = Logger("nova-api", "/tmp/config.cfg")
+#from metricgenerator import publish
+#publish.setLogger("compute-cell-api", "cell_config.cfg")
 
 class ComputeRPCAPIRedirect(object):
     # NOTE(comstud): These are a list of methods where the cells_rpcapi
@@ -160,7 +162,6 @@ class ComputeRPCProxyAPI(compute_rpcapi.ComputeAPI):
     def get_client(self, target, version_cap, serializer):
         return RPCClientCellsProxy(target, version_cap)
 
-
 class ComputeCellsAPI(compute_api.API):
     def __init__(self, *args, **kwargs):
         super(ComputeCellsAPI, self).__init__(*args, **kwargs)
@@ -171,6 +172,7 @@ class ComputeCellsAPI(compute_api.API):
         self.compute_task_api = ConductorTaskRPCAPIRedirect(self.cells_rpcapi)
         self._cell_type = 'api'
 
+    #@publish.ReportLatency("__cast_to_cells", 20)
     def _cast_to_cells(self, context, instance, method, *args, **kwargs):
         failcount = 1
         instance_uuid = instance.uuid
@@ -180,9 +182,8 @@ class ComputeCellsAPI(compute_api.API):
             logger.logFailure("__cast_to_cells", "failure", failcount)
             raise exception.InstanceUnknownCell(instance_uuid=instance_uuid)
         
-        logger.logFailure("__cast_to_cells", "failure", failcount)
-        logger.reportLatency("__cast_to_cells", "Latency", self.cells_rpcapi.cast_compute_api_method, context, cell_name,
-                method, instance_uuid, *args, **kwargs)
+        logger.logFailure("__cast_to_cells", failcount)
+        #logger.reportLatency("__cast_to_cells", self.cells_rpcapi.cast_compute_api_method, context, cell_name, method, instance_uuid, *args, **kwargs)
 
     def _call_to_cells(self, context, instance, method, *args, **kwargs):
         instance_uuid = instance.uuid

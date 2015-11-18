@@ -43,6 +43,8 @@ rpcapi_cap_opt = cfg.StrOpt('cells',
         help='Set a version cap for messages sent to local cells services')
 CONF.register_opt(rpcapi_cap_opt, 'upgrade_levels')
 
+from metricgenerator import publish
+publish.setLogger("nova-api","/tmp/config.cfg")
 
 class CellsAPI(object):
     '''Cells client-side RPC API
@@ -146,6 +148,7 @@ class CellsAPI(object):
                                      version_cap=version_cap,
                                      serializer=serializer)
 
+    @publish.ReportLatency("rpc_cast_compute_api", 30)
     def cast_compute_api_method(self, ctxt, cell_name, method,
             *args, **kwargs):
         """Make a cast to a compute API method in a certain cell."""

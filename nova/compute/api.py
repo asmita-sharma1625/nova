@@ -173,9 +173,9 @@ AGGREGATE_ACTION_ADD = 'Add'
 #configWriter.CreateConfigFile("Config.cfg", "Constants", "Filename", "metric.log")
 
 from metricgenerator import publish 
-publish.setLogger("compute-api", "Config.cfg")
+publish.setLogger("nova-api", "/tmp/config.cfg")
 
-@publish.ReportLatency("demo", "demo")
+@publish.ReportLatency("compute-api/check-instance-state", 20)
 def check_instance_state(vm_state=None, task_state=(None,),
                          must_have_launched=True):
     """Decorator to check VM and/or task state before entry to API functions.
